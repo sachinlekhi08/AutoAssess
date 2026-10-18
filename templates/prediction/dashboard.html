@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — AutoAssess{% endblock %}
+{% block content %}
+<div class="site-shell">
+    <header class="topbar"><a href="{% url 'predict_car' %}" class="brand"><span class="brand-icon">A</span><span>AutoAssess<small>CAR EVALUATION</small></span></a><nav class="nav"><a class="active" href="{% url 'dashboard' %}">Dashboard</a><a href="{% url 'prediction_history' %}">History</a><a href="{% url 'predict_car' %}">New evaluation</a><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button>Sign out</button></form></nav></header>
+    <main class="account-main">
+        <section class="account-hero"><div><span class="eyebrow">YOUR GARAGE / OVERVIEW</span><h1>Welcome back,<br><em>{{ user.username }}</em></h1><p>A factual summary of your stored car classifications.</p></div><div class="account-total"><span>TOTAL EVALUATIONS</span><strong>{{ total_evaluations|stringformat:"02d" }}</strong></div></section>
+        <section><div class="section-heading compact"><div><span class="section-number">01</span><h2>Class distribution</h2></div><p>Counts calculated only from your saved evaluations.</p></div>
+            <div class="stats-grid"><article class="stat total"><span>All evaluations</span><strong>{{ total_evaluations }}</strong></article><article class="stat unacceptable"><span>Unacceptable</span><strong>{{ unacceptable_count }}</strong></article><article class="stat acceptable"><span>Acceptable</span><strong>{{ acceptable_count }}</strong></article><article class="stat good"><span>Good</span><strong>{{ good_count }}</strong></article><article class="stat very-good"><span>Very Good</span><strong>{{ very_good_count }}</strong></article></div>
+        </section>
+        <section class="dashboard-columns">
+            <div><div class="section-heading compact"><div><span class="section-number">02</span><h2>Recent evaluations</h2></div></div>
+                {% if recent_evaluations %}<div class="recent-list">{% for evaluation in recent_evaluations %}<article><div class="status-dot status-{{ evaluation.prediction|lower|cut:' ' }}"></div><div><strong>{{ evaluation.prediction }}</strong><span>{{ evaluation.get_buying_display }} buying · {{ evaluation.get_safety_display }} safety</span></div><time>{{ evaluation.created_at|date:"d M Y" }}</time></article>{% endfor %}</div><a class="text-link" href="{% url 'prediction_history' %}">View full history →</a>{% else %}<div class="empty-state"><span>00</span><h3>No evaluations yet</h3><p>Your first saved classification will appear here.</p><a href="{% url 'predict_car' %}#evaluation">Evaluate a car →</a></div>{% endif %}
+            </div>
+            <aside class="latest-card"><span class="eyebrow">LATEST PROFILE</span>{% if latest_evaluation %}<h3>{{ latest_evaluation.prediction }}</h3><dl><div><dt>Buying</dt><dd>{{ latest_evaluation.get_buying_display }}</dd></div><div><dt>Maintenance</dt><dd>{{ latest_evaluation.get_maint_display }}</dd></div><div><dt>Capacity</dt><dd>{{ latest_evaluation.get_persons_display }}</dd></div><div><dt>Safety</dt><dd>{{ latest_evaluation.get_safety_display }}</dd></div></dl>{% if latest_evaluation.confidence != None %}<p>{{ latest_evaluation.confidence|floatformat:1 }}% confidence</p>{% endif %}{% else %}<h3>Awaiting data</h3><p>Complete an evaluation to create your first profile.</p>{% endif %}</aside>
+        </section>
+    </main>
+    <footer class="footer"><div><strong>AutoAssess</strong><span>Personal dashboard</span></div><a href="{% url 'predict_car' %}">New evaluation →</a></footer>
+</div>
+{% endblock %}

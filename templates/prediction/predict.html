@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}AutoAssess — Car Evaluation Prediction System{% endblock %}
+{% block content %}
+<div class="site-shell">
+    <header class="topbar">
+        <a href="{% url 'predict_car' %}" class="brand" aria-label="AutoAssess home"><span class="brand-icon">A</span><span>AutoAssess<small>CAR EVALUATION</small></span></a>
+        <nav class="nav" aria-label="Main navigation">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}">Dashboard</a><a href="{% url 'prediction_history' %}">History</a>
+                <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button>Sign out</button></form>
+            {% else %}
+                <a href="{% url 'login' %}">Sign in</a><a class="nav-primary" href="{% url 'register' %}">Create account</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-copy">
+                <span class="eyebrow">ACADEMIC ML CLASSIFIER <i></i> SIX INPUTS</span>
+                <h1>Evaluate a car.<br><em>See the class clearly.</em></h1>
+                <p>Compare a vehicle profile across price, upkeep, capacity, storage, and safety using a trained Random Forest pipeline.</p>
+                <a href="#evaluation" class="hero-action">Start evaluation <span>↓</span></a>
+            </div>
+            <div class="car-visual" aria-hidden="true">
+                <div class="road-line"></div>
+                <svg viewBox="0 0 720 300" role="img">
+                    <path class="car-outline" d="M91 206 L124 151 Q137 127 174 123 L291 114 Q331 110 359 131 L421 174 L579 185 Q617 188 632 216 L643 238 L606 238 Q597 194 550 194 Q504 194 493 238 L228 238 Q217 194 171 194 Q125 194 113 238 L73 238 Q64 220 91 206Z"/>
+                    <path class="car-window" d="M178 139 L289 130 Q316 129 335 142 L372 174 L153 174Z"/>
+                    <path class="car-window" d="M353 141 L403 176 L469 181 L418 143Z"/>
+                    <circle class="wheel" cx="170" cy="239" r="34"/><circle class="wheel-core" cx="170" cy="239" r="13"/>
+                    <circle class="wheel" cx="550" cy="239" r="34"/><circle class="wheel-core" cx="550" cy="239" r="13"/>
+                    <path class="car-detail" d="M228 188 H471 M307 132 L304 176 M404 179 L399 217"/>
+                </svg>
+                <span class="visual-tag">MODEL / 04 CLASSES</span>
+            </div>
+        </section>
+
+        <section class="evaluation-section" id="evaluation">
+            <div class="section-heading"><div><span class="section-number">01</span><h2>Vehicle profile</h2></div><p>Select the six categorical attributes used by the trained model.</p></div>
+            <div class="evaluation-grid">
+                <aside class="evaluation-aside">
+                    <span class="eyebrow">INPUT GUIDE</span>
+                    <h3>Every detail stays categorical.</h3>
+                    <p>Your selections are sent as raw category values. The saved pipeline handles all preprocessing.</p>
+                    <ul><li><span>01</span>Cost profile</li><li><span>02</span>Vehicle utility</li><li><span>03</span>Safety category</li></ul>
+                </aside>
+                <div class="form-panel">
+                    {% if error %}<div class="alert" role="alert"><strong>Unable to evaluate</strong><span>{{ error }}</span></div>{% endif %}
+                    <form method="post" class="evaluation-form" id="car-evaluation-form" novalidate>
+                        {% csrf_token %}
+                        {% if form.non_field_errors %}<div class="alert">{{ form.non_field_errors }}</div>{% endif %}
+                        <fieldset><legend><span>01</span> Cost profile</legend><div class="field-grid">
+                            <div class="field"><label for="{{ form.buying.id_for_label }}">{{ form.buying.label }}</label><div class="select-control">{{ form.buying }}</div>{% for error in form.buying.errors %}<small>{{ error }}</small>{% endfor %}</div>
+                            <div class="field"><label for="{{ form.maint.id_for_label }}">{{ form.maint.label }}</label><div class="select-control">{{ form.maint }}</div>{% for error in form.maint.errors %}<small>{{ error }}</small>{% endfor %}</div>
+                        </div></fieldset>
+                        <fieldset><legend><span>02</span> Space &amp; utility</legend><div class="field-grid three">
+                            <div class="field"><label for="{{ form.doors.id_for_label }}">{{ form.doors.label }}</label><div class="select-control">{{ form.doors }}</div>{% for error in form.doors.errors %}<small>{{ error }}</small>{% endfor %}</div>
+                            <div class="field"><label for="{{ form.persons.id_for_label }}">{{ form.persons.label }}</label><div class="select-control">{{ form.persons }}</div>{% for error in form.persons.errors %}<small>{{ error }}</small>{% endfor %}</div>
+                            <div class="field"><label for="{{ form.lug_boot.id_for_label }}">{{ form.lug_boot.label }}</label><div class="select-control">{{ form.lug_boot }}</div>{% for error in form.lug_boot.errors %}<small>{{ error }}</small>{% endfor %}</div>
+                        </div></fieldset>
+                        <fieldset><legend><span>03</span> Safety</legend><div class="field-grid"><div class="field"><label for="{{ form.safety.id_for_label }}">{{ form.safety.label }}</label><div class="select-control">{{ form.safety }}</div>{% for error in form.safety.errors %}<small>{{ error }}</small>{% endfor %}</div><div class="field-note"><strong>Ready for classification</strong><span>The service validates every selection again before inference.</span></div></div></fieldset>
+                        <button type="submit" class="submit-button"><span>Evaluate this car</span><b>→</b></button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        {% if result %}
+        <section class="result-section" id="result">
+            <div class="result-card {% if result.prediction == 'Unacceptable' %}result-unacceptable{% elif result.prediction == 'Acceptable' %}result-acceptable{% elif result.prediction == 'Good' %}result-good{% else %}result-very-good{% endif %}">
+                <div class="result-lead"><span class="eyebrow">CLASSIFICATION COMPLETE</span><div class="result-indicator"></div><p>Predicted class</p><h2>{{ result.prediction }}</h2>{% if result.confidence != None %}<span class="confidence">{{ result.confidence|floatformat:2 }}% model confidence</span>{% endif %}</div>
+                <div class="result-details"><h3>Submitted vehicle profile</h3><dl>
+                    <div><dt>Buying Price</dt><dd>{{ submitted_display.buying }}</dd></div><div><dt>Maintenance</dt><dd>{{ submitted_display.maint }}</dd></div><div><dt>Doors</dt><dd>{{ submitted_display.doors }}</dd></div><div><dt>Passenger Capacity</dt><dd>{{ submitted_display.persons }}</dd></div><div><dt>Boot Size</dt><dd>{{ submitted_display.lug_boot }}</dd></div><div><dt>Safety</dt><dd>{{ submitted_display.safety }}</dd></div>
+                </dl>{% if result.probabilities %}<div class="probability-list"><h3>Class probabilities</h3>{% for label, value in result.probabilities.items %}<div><span>{{ label }}</span><div class="probability-track"><i style="--value: {{ value }}%"></i></div><strong>{{ value|floatformat:2 }}%</strong></div>{% endfor %}</div>{% endif %}</div>
+                <p class="disclaimer">This is an academic machine-learning classification, not professional automotive or purchasing advice.</p>
+            </div>
+        </section>
+        {% endif %}
+    </main>
+    <footer class="footer"><div><strong>AutoAssess</strong><span>Car Evaluation Prediction System</span></div><p>Academic classification. Clear outcomes.</p></footer>
+</div>
+{% endblock %}

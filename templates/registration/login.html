@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Sign in — AutoAssess{% endblock %}
+{% block content %}
+<div class="auth-page">
+    <a href="{% url 'predict_car' %}" class="brand auth-brand"><span class="brand-icon">A</span><span>AutoAssess<small>CAR EVALUATION</small></span></a>
+    <main class="auth-layout">
+        <section class="auth-scene"><div><span class="eyebrow">PRIVATE WORKSPACE</span><h1>Return to your<br><em>evaluation record.</em></h1><p>Sign in to review saved vehicle profiles and class distributions.</p></div><div class="auth-lines" aria-hidden="true"><span></span><span></span><span></span></div></section>
+        <section class="auth-panel"><span class="section-number">01 / SIGN IN</span><h2>Welcome back</h2><p>Enter your AutoAssess account details.</p>
+            {% if form.non_field_errors %}<div class="alert">{% for error in form.non_field_errors %}<span>{{ error }}</span>{% endfor %}</div>{% endif %}
+            <form method="post" class="auth-form">{% csrf_token %}
+                <div class="field"><label for="{{ form.username.id_for_label }}">Username</label>{{ form.username }}{% for error in form.username.errors %}<small>{{ error }}</small>{% endfor %}</div>
+                <div class="field"><label for="{{ form.password.id_for_label }}">Password</label>{{ form.password }}{% for error in form.password.errors %}<small>{{ error }}</small>{% endfor %}</div>
+                {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}<button class="submit-button" type="submit"><span>Sign in</span><b>→</b></button>
+            </form><div class="auth-switch">New here? <a href="{% url 'register' %}">Create an account →</a></div>
+        </section>
+    </main>
+</div>
+{% endblock %}

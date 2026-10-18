@@ -1,0 +1,45 @@
+{
+    "project_name": "Car Evaluation Prediction System",
+    "features": {
+        "buying": [
+            "vhigh",
+            "high",
+            "med",
+            "low"
+        ],
+        "maint": [
+            "vhigh",
+            "high",
+            "med",
+            "low"
+        ],
+        "doors": [
+            "2",
+            "3",
+            "4",
+            "5more"
+        ],
+        "persons": [
+            "2",
+            "4",
+            "more"
+        ],
+        "lug_boot": [
+            "small",
+            "med",
+            "big"
+        ],
+        "safety": [
+            "low",
+            "med",
+            "high"
+        ]
+    },
+    "target_classes": {
+        "unacc": "Unacceptable",
+        "acc": "Acceptable",
+        "good": "Good",
+        "vgood": "Very Good"
+    },
+    "selected_model": "Random Forest"
+}

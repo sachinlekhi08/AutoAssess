@@ -1,0 +1,61 @@
+# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# ==============================
+# Django
+# ==============================
+db.sqlite3
+db.sqlite3-journal
+db.sqlite3.*-backup
+
+# Uploaded/generated media
+media/
+
+# ==============================
+# Environment / Secrets
+# ==============================
+.env
+.env.*
+!.env.example
+
+# ==============================
+# IDE
+# ==============================
+.idea/
+.vscode/
+
+# ==============================
+# Jupyter
+# ==============================
+.ipynb_checkpoints/
+
+# ==============================
+# Testing / Coverage
+# ==============================
+.pytest_cache/
+.coverage
+htmlcov/
+staticfiles/
+
+# ==============================
+# OS files
+# ==============================
+.DS_Store
+Thumbs.db
+
+# ==============================
+# Logs / temporary files
+# ==============================
+*.log
+*.tmp
+*.temp
+
